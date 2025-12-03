@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+
+#define BASE 256
+#define MOD 101
+
+int rabinKarp(char text[], char pattern[]) {
+    int n = strlen(text);
+    int m = strlen(pattern);
+    int i, t = 0, p = 0, h = 1;
+
+    for (i = 0; i < m - 1; i++)
+        h = (h * BASE) % MOD;
+
+    for (i = 0; i < m; i++) {
+        p = (BASE * p + pattern[i]) % MOD;
+        t = (BASE * t + text[i]) % MOD;
+    }
+
+    for (i = 0; i <= n - m; i++) {
+        if (p == t) {
+            int j;
+            for (j = 0; j < m; j++)
+                if (text[i + j] != pattern[j])
+                    break;
+            if (j == m)
+                return i;
+        }
+
+        if (i < n - m) {
+            t = (BASE * (t - text[i] * h) + text[i + m]) % MOD;
+            if (t < 0)
+                t += MOD;
+        }
+    }
+
+    return -1;
+}
+
+int main() {
+    char text[] = "hello this is rabin karp";
+    char pattern[] = "rabin";
+
+    int pos = rabinKarp(text, pattern);
+
+    if (pos != -1)
+        printf("Pattern found at index %d\n", pos);
+    else
+        printf("Pattern not found\n");
+
+    return 0;
+}
